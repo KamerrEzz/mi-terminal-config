@@ -7,6 +7,11 @@ y este proyecto sigue [Versionado Semántico](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-07-10
+
+### Corregido
+- `install.ps1` ya no falla al mezclar `settings.json` de Windows Terminal cuando ese archivo ya trae `schemes` o `keybindings` como array vacío (el chequeo evaluaba el valor en vez de la existencia de la propiedad, y PowerShell trata un array vacío como "falso")
+
 ## [1.0.1] - 2026-07-10
 
 ### Corregido
@@ -31,6 +36,7 @@ y este proyecto sigue [Versionado Semántico](https://semver.org/lang/es/).
 ### Documentación
 - Todo el repositorio traducido al español para la comunidad hispana
 
-[Unreleased]: https://github.com/KamerrEzz/mi-terminal-config/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/KamerrEzz/mi-terminal-config/compare/v1.0.2...HEAD
+[1.0.2]: https://github.com/KamerrEzz/mi-terminal-config/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/KamerrEzz/mi-terminal-config/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/KamerrEzz/mi-terminal-config/releases/tag/v1.0.0
