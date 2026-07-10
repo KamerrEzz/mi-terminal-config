@@ -24,13 +24,54 @@ como la gente para `ls` — todo instalado con un solo script.
 - **fastfetch**: banner de sistema (OS, CPU, RAM, disco, versiones de Node/pnpm)
   en cada pestaña nueva
 - **zoxide**: saltá a cualquier carpeta que ya visitaste con `z <parte-del-nombre>`
-- **eza**: `ls` / `ll` / `la` / `lt` con íconos y estado de git incluido
+- **eza**: reemplaza `ls` con íconos y estado de git — cuatro variantes según
+  cuánto detalle necesites (tabla abajo)
 - **fzf + PSFzf**: `Ctrl+T` busca archivos, `Ctrl+R` busca en el historial, ambos
   con búsqueda difusa
 - **PSReadLine** con autocompletado predictivo y colores Tokyo Night
 - **Modo Quake**: apretá <kbd>Win</kbd>+<kbd>`</kbd> desde *cualquier* aplicación
   para invocar/ocultar Windows Terminal como un dropdown, en todo el sistema
-- Atajos útiles: `pi`/`pd`/`pb`/`pr`/`px` para pnpm, `gs`/`ga`/`gc`/`gp`/`gl`/`gco` para git
+- Atajos cortos para pnpm y git — qué hace cada uno, en la tabla de abajo
+
+## Referencia rápida de comandos
+
+No hace falta memorizar nada de esto para usar el setup — son atajos opcionales
+que ahorran tipeo. Esta tabla es para cuando te cruces con uno y no te acuerdes
+qué hace.
+
+### Listar archivos (eza reemplaza a `ls`)
+
+| Comando | Qué muestra |
+|---|---|
+| `ls` | Listado simple, con íconos y carpetas primero |
+| `ll` | Listado **largo**: permisos, tamaño, fecha y estado de git por archivo |
+| `la` | Como `ll`, pero **incluye los archivos ocultos** (los que empiezan con `.`) |
+| `lt` | **Árbol** de carpetas (2 niveles), en vez de una lista plana |
+
+### Atajos de pnpm
+
+| Atajo | Equivale a | Qué hace |
+|---|---|---|
+| `pi` | `pnpm install` | Instala las dependencias del proyecto |
+| `pd` | `pnpm dev` | Levanta el entorno de desarrollo |
+| `pb` | `pnpm build` | Genera la build de producción |
+| `pr` | `pnpm run` | Corre un script del `package.json` (ej: `pr test`) |
+| `px` | `pnpm dlx` | Ejecuta un paquete sin instalarlo, como `npx` |
+
+### Atajos de git
+
+| Atajo | Equivale a | Qué hace |
+|---|---|---|
+| `gs` | `git status` | Muestra qué archivos cambiaron y cuáles están en staging |
+| `ga` | `git add` | Agrega archivos al staging (ej: `ga .` para todos) |
+| `gc` | `git commit` | Crea un commit con los cambios en staging |
+| `gp` | `git push` | Sube tus commits al repositorio remoto |
+| `gl` | `git log --oneline --graph --decorate` | Historial compacto, con gráfico de ramas |
+| `gco` | `git checkout` | Cambia de rama o descarta cambios en un archivo |
+
+¿Preferís tus propios alias o no usás pnpm? Están definidos al final de
+`powershell/Microsoft.PowerShell_profile.ps1` — borralos o cambialos como
+quieras, no dependen de nada más del setup.
 
 ## Requisitos
 
