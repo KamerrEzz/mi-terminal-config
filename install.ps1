@@ -18,6 +18,13 @@ function Write-Step($msg) { Write-Host "`n==> $msg" -ForegroundColor Cyan }
 function Write-Ok($msg)   { Write-Host "    OK  $msg" -ForegroundColor Green }
 function Write-Warn($msg) { Write-Host "    !!  $msg" -ForegroundColor Yellow }
 
+# Cuando el repo se descarga como ZIP desde GitHub, Windows marca todos sus
+# archivos con la "Mark of the Web" (zone identifier). Si no se limpia acá,
+# Copy-Item la arrastra a los archivos que este script copia al perfil del
+# usuario (por ejemplo Microsoft.PowerShell_profile.ps1), y pwsh los bloquea
+# como "no firmado digitalmente" en cualquier sesión nueva.
+Get-ChildItem -Path $repoRoot -Recurse -File | Unblock-File -ErrorAction SilentlyContinue
+
 # ---------------------------------------------------------------------------
 Write-Step "Revisando requisitos"
 if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
