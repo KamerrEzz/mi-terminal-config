@@ -146,7 +146,7 @@ if (-not $settingsPath) {
     $settings = Get-Content $settingsPath -Raw | ConvertFrom-Json
 
     # --- esquema de color ---
-    if (-not $settings.schemes) { $settings | Add-Member -NotePropertyName schemes -NotePropertyValue @() }
+    if ($settings.PSObject.Properties.Name -notcontains 'schemes') { $settings | Add-Member -NotePropertyName schemes -NotePropertyValue @() }
     if (-not ($settings.schemes | Where-Object { $_.name -eq 'Tokyo Night' })) {
         $tokyoNight = [ordered]@{
             name                = 'Tokyo Night'
@@ -200,7 +200,7 @@ if (-not $settingsPath) {
     Write-Ok "Se aplicó el look de Tokyo Night a los valores por defecto del perfil"
 
     # --- atajo del modo Quake ---
-    if (-not $settings.keybindings) { $settings | Add-Member -NotePropertyName keybindings -NotePropertyValue @() }
+    if ($settings.PSObject.Properties.Name -notcontains 'keybindings') { $settings | Add-Member -NotePropertyName keybindings -NotePropertyValue @() }
     if (-not ($settings.keybindings | Where-Object { $_.id -eq 'Terminal.QuakeMode' })) {
         $settings.keybindings += [pscustomobject]@{ id = 'Terminal.QuakeMode'; keys = 'win+`' }
         Write-Ok "Atajo de modo Quake agregado (Win+``)"
