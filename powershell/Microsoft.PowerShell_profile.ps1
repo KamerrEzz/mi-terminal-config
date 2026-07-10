@@ -1,12 +1,12 @@
-# --- Prompt (Oh My Posh, custom Tokyo Night theme with pnpm/node/git awareness) ---
+# --- Prompt (Oh My Posh, tema Tokyo Night custom con soporte pnpm/node/git) ---
 oh-my-posh init pwsh --config (Join-Path $PSScriptRoot 'tokyonight-custom.omp.json') | Invoke-Expression
 
-# --- Smart directory jumping ("z <part-of-folder-name>") ---
+# --- Navegación inteligente entre carpetas (zoxide: "z <parte-del-nombre>") ---
 if (Get-Command zoxide -ErrorAction SilentlyContinue) {
     Invoke-Expression (& { (zoxide init powershell | Out-String) })
 }
 
-# --- Listing with icons and git status (eza replaces ls) ---
+# --- Listado con iconos y estado de git (eza reemplaza a ls) ---
 if (Get-Command eza -ErrorAction SilentlyContinue) {
     Remove-Item alias:ls -Force -ErrorAction SilentlyContinue
     function ls { eza --icons --group-directories-first @args }
@@ -16,18 +16,18 @@ if (Get-Command eza -ErrorAction SilentlyContinue) {
 }
 Import-Module Terminal-Icons -ErrorAction SilentlyContinue
 
-# --- Fuzzy search: Ctrl+T searches files, Ctrl+R searches history ---
+# --- Búsqueda difusa: Ctrl+T busca archivos, Ctrl+R busca en el historial ---
 if (Get-Module -ListAvailable PSFzf) {
     Import-Module PSFzf
     Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
 }
 
-# --- PSReadLine: predictive IntelliSense + Tokyo Night colors ---
+# --- PSReadLine: autocompletado predictivo + colores a juego con Tokyo Night ---
 try {
     Set-PSReadLineOption -PredictionSource History -ErrorAction Stop
     Set-PSReadLineOption -PredictionViewStyle ListView -ErrorAction Stop
 } catch {
-    # Console without VT support (remote session, redirected host, etc.) - skipped without breaking the profile
+    # Consola sin soporte VT (sesión remota, host redirigido, etc.) - se omite sin romper el profile
 }
 Set-PSReadLineOption -Colors @{
     Command   = "#7AA2F7"
@@ -40,7 +40,7 @@ Set-PSReadLineOption -Colors @{
 }
 Set-PSReadLineKeyHandler -Key Tab -Function MenuComplete
 
-# --- Shortcuts (pnpm / git) - tweak to match your own package manager/workflow ---
+# --- Atajos (pnpm / git) - adaptalos a tu propio gestor de paquetes/flujo de trabajo ---
 function pi { pnpm install @args }
 function pd { pnpm dev @args }
 function pb { pnpm build @args }
@@ -54,7 +54,7 @@ function gp { git push @args }
 function gl { git log --oneline --graph --decorate @args }
 function gco { git checkout @args }
 
-# --- System banner when opening an interactive Windows Terminal tab ---
+# --- Banner de sistema al abrir una terminal interactiva en Windows Terminal ---
 if ($env:WT_SESSION -and $Host.Name -eq 'ConsoleHost' -and (Get-Command fastfetch -ErrorAction SilentlyContinue)) {
     fastfetch --config (Join-Path $PSScriptRoot 'fastfetch.jsonc')
 }

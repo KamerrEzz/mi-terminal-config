@@ -1,14 +1,14 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-    Installs and wires up this repo's Windows Terminal + PowerShell 7 setup:
-    Tokyo Night theme, Oh My Posh prompt (with pnpm/node/git segments), fastfetch
-    banner, zoxide, eza, fzf, Terminal-Icons and a Quake-mode keybinding.
+    Instala y configura este setup de Windows Terminal + PowerShell 7:
+    tema Tokyo Night, prompt de Oh My Posh (con segmentos de pnpm/node/git),
+    banner de fastfetch, zoxide, eza, fzf, Terminal-Icons y el atajo de modo Quake.
 
 .DESCRIPTION
-    Safe to re-run. Existing files are backed up before being touched, and the
-    Windows Terminal settings.json is merged (not replaced) so your other
-    profiles and tweaks are left alone.
+    Se puede correr las veces que quieras. Los archivos existentes se respaldan
+    antes de tocarlos, y el settings.json de Windows Terminal se mezcla (no se
+    reemplaza), así que tus otros perfiles y ajustes quedan intactos.
 #>
 
 $ErrorActionPreference = 'Stop'
@@ -19,14 +19,14 @@ function Write-Ok($msg)   { Write-Host "    OK  $msg" -ForegroundColor Green }
 function Write-Warn($msg) { Write-Host "    !!  $msg" -ForegroundColor Yellow }
 
 # ---------------------------------------------------------------------------
-Write-Step "Checking prerequisites"
+Write-Step "Revisando requisitos"
 if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
-    throw "winget is not available. Install 'App Installer' from the Microsoft Store first: https://aka.ms/getwinget"
+    throw "winget no está disponible. Instalá 'App Installer' desde la Microsoft Store primero: https://aka.ms/getwinget"
 }
-Write-Ok "winget found"
+Write-Ok "winget encontrado"
 
 # ---------------------------------------------------------------------------
-Write-Step "Installing packages via winget (skips anything already installed)"
+Write-Step "Instalando paquetes con winget (salta lo que ya esté instalado)"
 $packages = @(
     'Microsoft.PowerShell',
     'JanDeDobbeleer.OhMyPosh',
@@ -36,45 +36,46 @@ $packages = @(
     'junegunn.fzf'
 )
 foreach ($id in $packages) {
-    Write-Host "    installing $id ..."
+    Write-Host "    instalando $id ..."
     winget install -e --id $id --silent --accept-package-agreements --accept-source-agreements 2>&1 | Out-Null
 }
-Write-Ok "Package installs done"
+Write-Ok "Instalación de paquetes lista"
 
-# Refresh PATH in this session so freshly installed binaries resolve below
+# Refresca el PATH en esta sesión para que los binarios recién instalados se
+# puedan usar en los pasos siguientes
 $env:Path = [System.Environment]::GetEnvironmentVariable('Path', 'Machine') + ';' +
             [System.Environment]::GetEnvironmentVariable('Path', 'User')
 
 # ---------------------------------------------------------------------------
-Write-Step "Installing JetBrainsMono Nerd Font"
+Write-Step "Instalando la Nerd Font JetBrainsMono"
 Add-Type -AssemblyName System.Drawing
 $fontAlreadyInstalled = [bool](
     (New-Object System.Drawing.Text.InstalledFontCollection).Families |
     Where-Object { $_.Name -like 'JetBrainsMono NF*' }
 )
 if ($fontAlreadyInstalled) {
-    Write-Ok "Font already installed"
+    Write-Ok "La fuente ya estaba instalada"
 } elseif (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
-    # `oh-my-posh font install` can hang after finishing in non-interactive/
-    # non-console hosts instead of returning control - never let it block the
-    # rest of the install.
+    # `oh-my-posh font install` se puede quedar colgado después de terminar en
+    # hosts no interactivos/sin consola real - nunca dejar que esto bloquee el
+    # resto de la instalación.
     $job = Start-Job -ScriptBlock { oh-my-posh font install JetBrainsMono }
     if (Wait-Job $job -Timeout 60) {
         Receive-Job $job -ErrorAction SilentlyContinue | Out-Null
-        Write-Ok "Font installed"
+        Write-Ok "Fuente instalada"
     } else {
-        Write-Warn "Font install is taking too long - install it yourself with: oh-my-posh font install JetBrainsMono"
+        Write-Warn "La instalación de la fuente está tardando demasiado - instalala vos mismo con: oh-my-posh font install JetBrainsMono"
     }
     Remove-Job $job -Force -ErrorAction SilentlyContinue
 } else {
-    Write-Warn "oh-my-posh not found on PATH yet - re-run this script after restarting your terminal to install the font"
+    Write-Warn "oh-my-posh todavía no está en el PATH - reiniciá tu terminal y volvé a correr este script para instalar la fuente"
 }
 
 # ---------------------------------------------------------------------------
-Write-Step "Installing PowerShell modules"
+Write-Step "Instalando módulos de PowerShell"
 
-# Make sure NuGet + PSGallery trust are in place so Install-Module never
-# stops to ask an interactive question below.
+# Asegura que NuGet y la confianza en PSGallery estén listos para que
+# Install-Module nunca se detenga a pedir confirmación más abajo.
 if (-not (Get-PackageProvider -Name NuGet -ErrorAction SilentlyContinue)) {
     Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force | Out-Null
 }
@@ -86,13 +87,13 @@ foreach ($mod in @('Terminal-Icons', 'PSFzf')) {
     if (-not (Get-Module -ListAvailable -Name $mod)) {
         Install-Module -Name $mod -Repository PSGallery -Scope CurrentUser -Force -AcceptLicense -AllowClobber
     }
-    Write-Ok "$mod ready"
+    Write-Ok "$mod listo"
 }
 
 # ---------------------------------------------------------------------------
-Write-Step "Deploying PowerShell profile"
+Write-Step "Desplegando el profile de PowerShell"
 if (-not (Get-Command pwsh -ErrorAction SilentlyContinue)) {
-    Write-Warn "pwsh (PowerShell 7) isn't on PATH in this session yet - restart your terminal and re-run this script to finish this step"
+    Write-Warn "pwsh (PowerShell 7) todavía no está en el PATH de esta sesión - reiniciá tu terminal y volvé a correr este script para completar este paso"
 } else {
     $targetProfile = pwsh -NoProfile -Command '$PROFILE'
     $targetDir = Split-Path $targetProfile -Parent
@@ -101,17 +102,17 @@ if (-not (Get-Command pwsh -ErrorAction SilentlyContinue)) {
     if (Test-Path $targetProfile) {
         $backup = "$targetProfile.bak-$(Get-Date -Format 'yyyyMMddHHmmss')"
         Copy-Item $targetProfile $backup
-        Write-Warn "Existing profile backed up to $backup"
+        Write-Warn "Profile existente respaldado en $backup"
     }
 
     Copy-Item (Join-Path $repoRoot 'powershell\Microsoft.PowerShell_profile.ps1') $targetProfile -Force
     Copy-Item (Join-Path $repoRoot 'powershell\tokyonight-custom.omp.json') (Join-Path $targetDir 'tokyonight-custom.omp.json') -Force
     Copy-Item (Join-Path $repoRoot 'powershell\fastfetch.jsonc') (Join-Path $targetDir 'fastfetch.jsonc') -Force
-    Write-Ok "Profile deployed to $targetProfile"
+    Write-Ok "Profile desplegado en $targetProfile"
 }
 
 # ---------------------------------------------------------------------------
-Write-Step "Merging Windows Terminal settings"
+Write-Step "Mezclando la configuración de Windows Terminal"
 $possibleSettingsPaths = @(
     "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json",
     "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminalPreview_8wekyb3d8bbwe\LocalState\settings.json",
@@ -120,15 +121,15 @@ $possibleSettingsPaths = @(
 $settingsPath = $possibleSettingsPaths | Where-Object { Test-Path $_ } | Select-Object -First 1
 
 if (-not $settingsPath) {
-    Write-Warn "Windows Terminal settings.json not found - install Windows Terminal from the Microsoft Store and re-run this script"
+    Write-Warn "No se encontró el settings.json de Windows Terminal - instalá Windows Terminal desde la Microsoft Store y volvé a correr este script"
 } else {
     $backup = "$settingsPath.bak-$(Get-Date -Format 'yyyyMMddHHmmss')"
     Copy-Item $settingsPath $backup
-    Write-Warn "Existing settings.json backed up to $backup"
+    Write-Warn "settings.json existente respaldado en $backup"
 
     $settings = Get-Content $settingsPath -Raw | ConvertFrom-Json
 
-    # --- color scheme ---
+    # --- esquema de color ---
     if (-not $settings.schemes) { $settings | Add-Member -NotePropertyName schemes -NotePropertyValue @() }
     if (-not ($settings.schemes | Where-Object { $_.name -eq 'Tokyo Night' })) {
         $tokyoNight = [ordered]@{
@@ -155,12 +156,12 @@ if (-not $settingsPath) {
             brightWhite         = '#C0CAF5'
         }
         $settings.schemes += [pscustomobject]$tokyoNight
-        Write-Ok "Added 'Tokyo Night' color scheme"
+        Write-Ok "Esquema de color 'Tokyo Night' agregado"
     } else {
-        Write-Ok "'Tokyo Night' color scheme already present"
+        Write-Ok "El esquema 'Tokyo Night' ya estaba presente"
     }
 
-    # --- profile defaults ---
+    # --- valores por defecto del perfil ---
     if (-not $settings.profiles.defaults) {
         $settings.profiles | Add-Member -NotePropertyName defaults -NotePropertyValue ([pscustomobject]@{}) -Force
     }
@@ -180,18 +181,18 @@ if (-not $settingsPath) {
             $defaults | Add-Member -NotePropertyName $key -NotePropertyValue $defaultsToApply[$key]
         }
     }
-    Write-Ok "Applied Tokyo Night look to profile defaults"
+    Write-Ok "Se aplicó el look de Tokyo Night a los valores por defecto del perfil"
 
-    # --- Quake mode keybinding ---
+    # --- atajo del modo Quake ---
     if (-not $settings.keybindings) { $settings | Add-Member -NotePropertyName keybindings -NotePropertyValue @() }
     if (-not ($settings.keybindings | Where-Object { $_.id -eq 'Terminal.QuakeMode' })) {
         $settings.keybindings += [pscustomobject]@{ id = 'Terminal.QuakeMode'; keys = 'win+`' }
-        Write-Ok "Added Quake mode keybinding (Win+``)"
+        Write-Ok "Atajo de modo Quake agregado (Win+``)"
     } else {
-        Write-Ok "Quake mode keybinding already present"
+        Write-Ok "El atajo de modo Quake ya estaba presente"
     }
 
-    # --- offer to set PowerShell 7 as default profile ---
+    # --- ofrece poner PowerShell 7 como perfil por defecto ---
     $pwshProfile = $settings.profiles.list | Where-Object {
         $_.source -eq 'Windows.Terminal.PowershellCore' -or $_.commandline -match 'pwsh\.exe'
     } | Select-Object -First 1
@@ -203,19 +204,19 @@ if (-not $settingsPath) {
             $pwshProfile.tabColor = '#7AA2F7'
         }
 
-        $answer = Read-Host "    Set PowerShell 7 as your default Windows Terminal profile? [Y/n]"
+        $answer = Read-Host "    ¿Poner PowerShell 7 como tu perfil por defecto de Windows Terminal? [Y/n]"
         if ($answer -notmatch '^[nN]') {
             $settings.defaultProfile = $pwshProfile.guid
-            Write-Ok "PowerShell 7 set as default profile"
+            Write-Ok "PowerShell 7 configurado como perfil por defecto"
         }
     } else {
-        Write-Warn "No PowerShell 7 profile found yet - open a new Windows Terminal tab once, then re-run this script to finish this step"
+        Write-Warn "Todavía no se encontró un perfil de PowerShell 7 - abrí una pestaña nueva de Windows Terminal una vez, y volvé a correr este script para completar este paso"
     }
 
     ($settings | ConvertTo-Json -Depth 20) | Set-Content -Path $settingsPath -Encoding utf8
-    Write-Ok "settings.json updated"
+    Write-Ok "settings.json actualizado"
 }
 
 # ---------------------------------------------------------------------------
-Write-Host "`nAll done! Close every Windows Terminal window and open a new one to see it in action." -ForegroundColor Magenta
-Write-Host "Tip: press Win+``` (backtick) from anywhere to summon/hide Windows Terminal - Quake mode." -ForegroundColor Magenta
+Write-Host "`n¡Listo! Cerrá todas las ventanas de Windows Terminal y abrí una nueva para verlo en acción." -ForegroundColor Magenta
+Write-Host "Tip: apretá Win+``` (backtick) desde cualquier lado para invocar/ocultar Windows Terminal - modo Quake." -ForegroundColor Magenta

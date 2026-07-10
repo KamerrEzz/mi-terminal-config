@@ -1,8 +1,8 @@
-// Reference only — install.ps1 merges these pieces into your existing settings.json automatically.
-// Kept here so you can see exactly what gets changed, or apply it by hand via
-// Windows Terminal > Settings > Open JSON file.
+// Solo de referencia — install.ps1 mezcla estas partes en tu settings.json automáticamente.
+// Se deja acá para que veas exactamente qué se cambia, o lo apliques a mano vía
+// Windows Terminal > Configuración > Abrir archivo JSON.
 {
-  // Tokyo Night color scheme — add to the top-level "schemes" array
+  // Esquema de color Tokyo Night — agregar al array de nivel superior "schemes"
   "schemes": [
     {
       "name": "Tokyo Night",
@@ -29,7 +29,7 @@
     }
   ],
 
-  // Applied to every profile — merge into "profiles" -> "defaults"
+  // Se aplica a todos los perfiles — mezclar dentro de "profiles" -> "defaults"
   "profiles": {
     "defaults": {
       "colorScheme": "Tokyo Night",
@@ -44,8 +44,8 @@
     }
   },
 
-  // Add to the top-level "keybindings" array.
-  // Win+` = Quake mode: summon/hide Windows Terminal as a dropdown from ANY app, system-wide.
+  // Agregar al array de nivel superior "keybindings".
+  // Win+` = modo Quake: invoca/oculta Windows Terminal como un dropdown desde CUALQUIER app, en todo el sistema.
   "keybindings": [
     {
       "id": "Terminal.QuakeMode",
