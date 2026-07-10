@@ -76,16 +76,32 @@ Write-Step "Instalando módulos de PowerShell"
 
 # Asegura que NuGet y la confianza en PSGallery estén listos para que
 # Install-Module nunca se detenga a pedir confirmación más abajo.
+# -ForceBootstrap es necesario además de -Force: en el PowerShellGet 1.0.0.1
+# que trae Windows PowerShell 5.1 por defecto, -Force solo no alcanza para
+# suprimir el prompt interactivo de "¿instalar el proveedor NuGet?".
 if (-not (Get-PackageProvider -Name NuGet -ErrorAction SilentlyContinue)) {
-    Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force | Out-Null
+    Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force -ForceBootstrap | Out-Null
 }
 if ((Get-PSRepository -Name PSGallery).InstallationPolicy -ne 'Trusted') {
     Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
 }
 
+# -AcceptLicense sólo existe en PowerShellGet >= 1.6.0. El PowerShellGet
+# 1.0.0.1 que trae Windows PowerShell 5.1 por defecto no tiene ese parámetro,
+# así que se agrega solo si el cmdlet instalado lo soporta.
+$installModuleParams = @{
+    Repository   = 'PSGallery'
+    Scope        = 'CurrentUser'
+    Force        = $true
+    AllowClobber = $true
+}
+if ((Get-Command Install-Module).Parameters.ContainsKey('AcceptLicense')) {
+    $installModuleParams['AcceptLicense'] = $true
+}
+
 foreach ($mod in @('Terminal-Icons', 'PSFzf')) {
     if (-not (Get-Module -ListAvailable -Name $mod)) {
-        Install-Module -Name $mod -Repository PSGallery -Scope CurrentUser -Force -AcceptLicense -AllowClobber
+        Install-Module -Name $mod @installModuleParams
     }
     Write-Ok "$mod listo"
 }
