@@ -6,12 +6,7 @@ reconoce tu contexto de git/node/pnpm, un banner de sistema con fastfetch,
 búsqueda difusa, navegación inteligente entre carpetas, y un reemplazo
 como la gente para `ls` — todo instalado con un solo script.
 
-```
- ➜ mi-terminal-config ⚡ (main)  pnpm                          v22.10.0  19:47
-▶ pnpm dev
-  ⏱ 812ms                                                     v22.10.0  19:48
-▶
-```
+![](https://raw.githubusercontent.com/KamerrEzz/mi-terminal-config/refs/heads/main/CAPTURE.png)
 
 ## Qué incluye
 
