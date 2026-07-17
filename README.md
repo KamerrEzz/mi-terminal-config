@@ -23,9 +23,15 @@ como la gente para `ls` — todo instalado con un solo script.
   cuánto detalle necesites (tabla abajo)
 - **fzf + PSFzf**: `Ctrl+T` busca archivos, `Ctrl+R` busca en el historial, ambos
   con búsqueda difusa
+- **Carapace**: autocompletado real con `Tab` — subcomandos y flags de `git`,
+  `gh`, `docker`, `pnpm` y cientos de CLIs más, no solo nombres de archivo
 - **PSReadLine** con autocompletado predictivo y colores Tokyo Night
 - **Modo Quake**: apretá <kbd>Win</kbd>+<kbd>`</kbd> desde *cualquier* aplicación
   para invocar/ocultar Windows Terminal como un dropdown, en todo el sistema
+- **Perfil "PowerShell (Grabación)"**: mismo tema, pero sin acrylic/transparencia
+  (evita artefactos de blur al comprimir video) y con fuente más grande para que
+  se lea a 1080p — elegilo desde la flechita al lado de la pestaña "+" cuando
+  vayas a grabar, sin tocar tu perfil de uso diario
 - Atajos cortos para pnpm y git — qué hace cada uno, en la tabla de abajo
 
 ## Referencia rápida de comandos
@@ -90,14 +96,16 @@ reemplazarlo, así que tus otros perfiles y ajustes quedan intactos.
 
 ### Qué hace el instalador exactamente
 
-1. Instala con `winget`: PowerShell 7, Oh My Posh, fastfetch, zoxide, eza, fzf
+1. Instala con `winget`: PowerShell 7, Oh My Posh, fastfetch, zoxide, eza, fzf,
+   Carapace
 2. Instala la Nerd Font JetBrainsMono (necesaria para que se vean todos los
    íconos de arriba)
 3. Instala los módulos de PowerShell `Terminal-Icons` y `PSFzf`
 4. Copia el profile, el tema y la config de fastfetch a tu carpeta `$PROFILE`
    (haciendo backup de lo que ya tengas ahí)
-5. Mezcla el esquema Tokyo Night, la fuente/opacidad/cursor y el atajo del
-   modo Quake dentro de tu `settings.json` de Windows Terminal
+5. Mezcla el esquema Tokyo Night, la fuente/opacidad/cursor, el atajo del
+   modo Quake y el perfil "PowerShell (Grabación)" dentro de tu `settings.json`
+   de Windows Terminal
 6. Te pregunta antes de cambiar tu perfil por defecto — nada pasa en silencio
 
 Cuando termine: **cerrá todas las ventanas de Windows Terminal y abrí una
@@ -125,6 +133,7 @@ open-source — todo el crédito a sus autores:
 - [zoxide](https://github.com/ajeetdsouza/zoxide)
 - [eza](https://github.com/eza-community/eza)
 - [fzf](https://github.com/junegunn/fzf) y [PSFzf](https://github.com/kelleyma49/PSFzf)
+- [Carapace](https://github.com/carapace-sh/carapace-bin)
 - [Terminal-Icons](https://github.com/devblackops/Terminal-Icons)
 - Paleta de colores [Tokyo Night](https://github.com/enkia/tokyo-night-vscode-theme)
 

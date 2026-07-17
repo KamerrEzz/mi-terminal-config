@@ -3,7 +3,8 @@
 .SYNOPSIS
     Instala y configura este setup de Windows Terminal + PowerShell 7:
     tema Tokyo Night, prompt de Oh My Posh (con segmentos de pnpm/node/git),
-    banner de fastfetch, zoxide, eza, fzf, Terminal-Icons y el atajo de modo Quake.
+    banner de fastfetch, zoxide, eza, fzf, Carapace, Terminal-Icons, el atajo
+    de modo Quake y un perfil de grabación sin transparencia.
 
 .DESCRIPTION
     Se puede correr las veces que quieras. Los archivos existentes se respaldan
@@ -40,7 +41,8 @@ $packages = @(
     'Fastfetch-cli.Fastfetch',
     'ajeetdsouza.zoxide',
     'eza-community.eza',
-    'junegunn.fzf'
+    'junegunn.fzf',
+    'rsteube.Carapace'
 )
 foreach ($id in $packages) {
     Write-Host "    instalando $id ..."
@@ -213,6 +215,38 @@ if (-not $settingsPath) {
         Write-Ok "Atajo de modo Quake agregado (Win+``)"
     } else {
         Write-Ok "El atajo de modo Quake ya estaba presente"
+    }
+
+    # --- perfil de "Grabación": mismo tema, sin transparencia y con fuente
+    #     más grande, para grabar video sin artefactos de blur/acrylic ni
+    #     texto ilegible al comprimir. No toca tu perfil de uso diario.
+    $recordingGuid = '{e0cbe36f-ee71-48b6-9038-e9be646461af}'
+    $recordingProfile = $settings.profiles.list | Where-Object { $_.guid -eq $recordingGuid }
+    $recordingProfileFields = [ordered]@{
+        name             = 'PowerShell (Grabación)'
+        commandline      = '%LOCALAPPDATA%\Microsoft\WindowsApps\pwsh.exe'
+        hidden           = $false
+        colorScheme      = 'Tokyo Night'
+        font             = [pscustomobject]@{ face = 'JetBrainsMono NFM'; size = 18 }
+        opacity          = 100
+        useAcrylic       = $false
+        cursorShape      = 'bar'
+        antialiasingMode = 'cleartype'
+        tabColor         = '#9ECE6A'
+    }
+    if (-not $recordingProfile) {
+        $recordingProfile = [pscustomobject]([ordered]@{ guid = $recordingGuid } + $recordingProfileFields)
+        $settings.profiles.list += $recordingProfile
+        Write-Ok "Perfil 'PowerShell (Grabación)' agregado"
+    } else {
+        foreach ($key in $recordingProfileFields.Keys) {
+            if ($recordingProfile.PSObject.Properties.Name -contains $key) {
+                $recordingProfile.$key = $recordingProfileFields[$key]
+            } else {
+                $recordingProfile | Add-Member -NotePropertyName $key -NotePropertyValue $recordingProfileFields[$key]
+            }
+        }
+        Write-Ok "Perfil 'PowerShell (Grabación)' ya existía - actualizado"
     }
 
     # --- ofrece poner PowerShell 7 como perfil por defecto ---

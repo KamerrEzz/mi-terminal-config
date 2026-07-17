@@ -22,6 +22,11 @@ if (Get-Module -ListAvailable PSFzf) {
     Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
 }
 
+# --- Carapace: autocompletado real (subcomandos y flags, no solo archivos) para git/gh/docker/pnpm y cientos más ---
+if (Get-Command carapace -ErrorAction SilentlyContinue) {
+    carapace _carapace | Out-String | Invoke-Expression
+}
+
 # --- PSReadLine: autocompletado predictivo + colores a juego con Tokyo Night ---
 try {
     Set-PSReadLineOption -PredictionSource History -ErrorAction Stop
